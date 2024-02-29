@@ -6,8 +6,6 @@ import type {
 } from "partymix";
 import { TugOWar } from "~/components/tug-o-war";
 
-declare var PARTYKIT_HOST: string;
-
 export const meta: MetaFunction = () => {
   return [
     {
