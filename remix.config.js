@@ -8,7 +8,4 @@ export default {
   serverPlatform: "neutral",
   tailwind: true,
   postcss: true,
-  dev: {
-    port: 8002,
-  },
 };

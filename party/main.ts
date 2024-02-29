@@ -28,7 +28,7 @@ export default class MyRemix implements Party.Server {
   static onFetch(
     request: Party.Request,
     lobby: Party.FetchLobby,
-    ctx: Party.ExecutionContext
+    ctx: Party.ExecutionContext,
   ) {
     return handleRequest(request, lobby, ctx);
   }

@@ -3,13 +3,10 @@ import { useState } from "react";
 import type { State } from "../../messages.d";
 import countryCodeEmoji from "./country-code-emoji";
 
-// This is a component that will connect to the partykit backend
-// and display the number of connected users, and where they're from.
 export default function WhosHere() {
   const [users, setUsers] = useState<State | undefined>();
 
   usePartySocket({
-    // connect to the party defined by 'geo.ts'
     party: "geo",
     // this can be any name, we just picked 'index'
     room: "index",

@@ -42,7 +42,7 @@ export default class MyRemix implements Party.Server {
   // This is called every time a new connection is made
   async onConnect(
     connection: Party.Connection<{ from: string }>,
-    ctx: Party.ConnectionContext
+    ctx: Party.ConnectionContext,
   ): Promise<void> {
     // Let's read the country from the request context
     const from = (ctx.request.cf?.country ?? "unknown") as string;
@@ -81,7 +81,7 @@ export default class MyRemix implements Party.Server {
   // This is called when a connection has an error
   async onError(
     connection: Party.Connection<{ from: string }>,
-    err: Error
+    err: Error,
   ): Promise<void> {
     // let's log the error
     console.error(err);
