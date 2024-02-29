@@ -1,12 +1,14 @@
 {
   "$schema": "https://www.partykit.io/schema.json",
-  "name": "partymix-example",
+  "name": "partymix-tug-o-war",
   // remix compiles our actual entry point (party/main.ts) to build/index.js
   "main": "build/index.js",
   "compatibilityDate": "2023-12-22",
+  "port": 3009,
   "parties": {
     // we also have a sub party that we use just for geo presence
-    "geo": "party/geo.ts"
+    "geo": "party/geo.ts",
+    "game": "party/game.ts"
   },
   "serve": "public"
 }

@@ -1,15 +1,16 @@
+import { useLoaderData } from "@remix-run/react";
 import type {
   LoaderFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "partymix";
-import WhosHere from "../components/whos-here";
-
-declare const PARTYKIT_HOST: string;
+import { TugOWar } from "~/components/tug-o-war";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Tug-o-War" },
+    {
+      title: "Tug-o-War",
+    },
     {
       name: "description",
       content: "Realtime game of tug-o-war with Remix, PartyKit, and MSW",
@@ -18,21 +19,24 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = async function ({
-  context,
+  request,
 }: LoaderFunctionArgs) {
-  // You can use context.lobby to read vars, communicate with parties,
-  // read from ai models or the vector db, and more.
-  //
-  // See https://docs.partykit.io/reference/partyserver-api/#partyfetchlobby
-  // for more info.
-  return Response.json({ partykitHost: PARTYKIT_HOST });
+  // Fetch the current score of the game on initial load
+  // and pass it to the client component as the initial state.
+  const response = await fetch(new URL("/parties/game/index", request.url));
+  const { score } = await response.json();
+
+  return {
+    score,
+  };
 };
 
 export default function Index() {
+  const { score } = useLoaderData<typeof loader>();
+
   return (
     <div>
-      <h1>🎈 PartyKit ⤫ Remix 💿 </h1>
-      <WhosHere />
+      <TugOWar initialScore={score} />
     </div>
   );
 }

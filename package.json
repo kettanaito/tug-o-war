@@ -1,15 +1,15 @@
 {
   "name": "tug-o-war",
   "private": true,
-  "description": "🎈 PartyKit ⤫ Remix 💿",
+  "description": "Realtime game of tug-o-war with Remix, Partykit, and MSW",
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "rimraf build && rimraf public/build && remix build",
-    "check": "tsc --noEmit",
-    "deploy": "npm run build && partykit deploy",
+    "start": "partykit dev",
     "dev": "remix dev --manual -c \"npm start\"",
-    "start": "partykit dev"
+    "check": "tsc --noEmit",
+    "build": "rimraf build && rimraf public/build && remix build",
+    "deploy": "npm run build && partykit deploy"
   },
   "dependencies": {
     "@remix-run/css-bundle": "^2.7.2",
@@ -32,6 +32,6 @@
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=18.17.1"
+    "node": ">=20.11.0"
   }
 }
