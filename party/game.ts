@@ -18,7 +18,11 @@ export default class GameServer implements Party.Server {
   }
 
   onRequest(request: Party.Request): Response | Promise<Response> {
-    return Response.json({ score: this.score });
+    if (request.method === "GET") {
+      return Response.json({ score: this.score });
+    }
+
+    return new Response(null, { status: 405 });
   }
 
   onMessage(message: string, sender: Party.Connection<unknown>) {

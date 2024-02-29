@@ -1,10 +1,12 @@
-import { useLoaderData } from "@remix-run/react";
+import { json, useLoaderData } from "@remix-run/react";
 import type {
   LoaderFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "partymix";
 import { TugOWar } from "~/components/tug-o-war";
+
+declare var PARTYKIT_HOST: string;
 
 export const meta: MetaFunction = () => {
   return [
@@ -23,20 +25,25 @@ export const loader: LoaderFunction = async function ({
 }: LoaderFunctionArgs) {
   // Fetch the current score of the game on initial load
   // and pass it to the client component as the initial state.
-  const response = await fetch(new URL("/parties/game/index", request.url));
-  const { score } = await response.json();
+  const url = new URL("/parties/game/index", request.url);
+  const score = await fetch(url)
+    .then((response) => response.json())
+    .then((data) => data.score)
+    .catch(() => -1);
 
-  return {
+  return json({
     score,
-  };
+  });
 };
 
 export default function Index() {
   const { score } = useLoaderData<typeof loader>();
 
+  console.log({ score });
+
   return (
     <div>
-      <TugOWar initialScore={score} />
+      <TugOWar initialScore={0} />
     </div>
   );
 }
