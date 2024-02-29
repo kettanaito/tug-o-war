@@ -43,7 +43,7 @@ export default function Index() {
 
   return (
     <div>
-      <TugOWar initialScore={0} />
+      <TugOWar initialScore={score} />
     </div>
   );
 }
