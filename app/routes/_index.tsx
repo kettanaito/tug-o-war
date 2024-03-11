@@ -20,11 +20,14 @@ export const meta: MetaFunction = () => {
 
 export const loader: LoaderFunction = async function ({
   request,
+  context,
 }: LoaderFunctionArgs) {
   // Fetch the current score of the game on initial load
   // and pass it to the client component as the initial state.
-  const url = new URL("/parties/game/index", request.url);
-  const score = await fetch(url)
+
+  const score = await context.lobby.parties.game
+    .get("index")
+    .fetch("/")
     .then((response) => response.json())
     .then((data) => data.score)
     .catch(() => -1);
