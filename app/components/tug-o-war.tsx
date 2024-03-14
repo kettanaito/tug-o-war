@@ -11,10 +11,12 @@ import { GameEnd } from './game-end'
 export function TugOWar({
   initialGameState,
   initialScore,
+  initialTimeElapsed,
   lastWinner,
 }: {
   initialGameState: GameState
   initialScore: number
+  initialTimeElapsed?: number
   lastWinner?: GameTeam
 }) {
   const [gameState, setGameState] = useState(initialGameState)
@@ -22,6 +24,7 @@ export function TugOWar({
   const [winningTeam, setWinningTeam] = useState<GameTeam | undefined>(
     lastWinner,
   )
+  const [timeElapsed, setTimeElapsed] = useState(initialTimeElapsed ?? 0)
 
   const socket = usePartySocket({
     party: 'game',
@@ -34,6 +37,7 @@ export function TugOWar({
           setGameState(message.payload.nextState)
 
           if (message.payload.nextState === 'waiting' && gameScore !== 0) {
+            setTimeElapsed(0)
             setGameScore(0)
           }
 
@@ -45,6 +49,12 @@ export function TugOWar({
 
         case 'score': {
           setGameScore(message.payload.nextScore)
+          break
+        }
+
+        case 'game-time': {
+          console.log('GAME TIME', message.payload)
+          setTimeElapsed(message.payload.timeElapsed)
           break
         }
       }
@@ -84,6 +94,7 @@ export function TugOWar({
         </>
       ) : (
         <>
+          <h2>00:{timeElapsed.toString().padStart(2, '0')}</h2>
           <input
             name="rope"
             type="range"

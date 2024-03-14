@@ -5,6 +5,7 @@ const MAX_SCORE = 100
 
 export type GameTeam = 'team-left' | 'team-right'
 export type GameState = 'waiting' | 'playing' | 'ended'
+const GAME_DURATION_MS = 15_000
 
 export type ServerMessageType =
   | {
@@ -21,8 +22,14 @@ export type ServerMessageType =
           }
         | {
             nextState: 'ended'
-            winningTeam: GameTeam
+            winningTeam: GameTeam | undefined
           }
+    }
+  | {
+      type: 'game-time'
+      payload: {
+        timeElapsed: number
+      }
     }
 
 export type ClientMessageType =
@@ -46,13 +53,18 @@ export default class GameServer implements Party.Server {
 
   score = 0
   gameState: GameState = 'waiting'
+  timeElapsed = 0
   lastWinner?: GameTeam
+
+  private gameTimer?: NodeJS.Timeout
+  private gameEndTimer?: NodeJS.Timeout
 
   constructor(private readonly room: Party.Room) {}
 
   async onStart() {
     this.score = (await this.room.storage.get('score')) ?? 0
     this.gameState = (await this.room.storage.get('gameState')) ?? 'waiting'
+    this.timeElapsed = (await this.room.storage.get('timeElapsed')) ?? 0
     this.lastWinner = await this.room.storage.get('lastWinner')
   }
 
@@ -65,6 +77,7 @@ export default class GameServer implements Party.Server {
       return Response.json({
         gameState: this.gameState,
         score: this.score,
+        timeElapsed: this.timeElapsed,
         lastWinner: this.lastWinner,
       })
     }
@@ -101,6 +114,26 @@ export default class GameServer implements Party.Server {
     this.gameState = 'playing'
     this.room.storage.put('gameState', this.gameState)
 
+    // Broadcast the time elapsed every second.
+    this.gameTimer = setInterval(() => {
+      this.timeElapsed += 1
+
+      this.room.storage.put('timeElapsed', this.timeElapsed)
+      this.room.broadcast(
+        JSON.stringify({
+          type: 'game-time',
+          payload: {
+            timeElapsed: this.timeElapsed,
+          },
+        } satisfies ServerMessageType),
+      )
+    }, 1_000)
+
+    // End the game if it hasn't ended in X seconds.
+    this.gameEndTimer = setTimeout(() => {
+      this.endGame()
+    }, GAME_DURATION_MS)
+
     this.room.broadcast(
       JSON.stringify({
         type: 'game-state',
@@ -111,10 +144,49 @@ export default class GameServer implements Party.Server {
     )
   }
 
-  private endGame(winningTeam: GameTeam): void {
+  private resetGame(): void {
+    this.gameState = 'waiting'
+    this.score = 0
+    this.timeElapsed = 0
+
+    clearInterval(this.gameTimer)
+    clearTimeout(this.gameEndTimer)
+
+    this.lastWinner = undefined
+    this.room.storage.put('gameState', this.gameState)
+    this.room.storage.put('score', this.score)
+    this.room.storage.put('timeElapsed', this.timeElapsed)
+    this.room.storage.put('lastWinner', undefined)
+
+    this.room.broadcast(
+      JSON.stringify({
+        type: 'game-state',
+        payload: {
+          nextState: 'waiting',
+        },
+      } satisfies ServerMessageType),
+    )
+  }
+
+  private endGame(): void {
     if (this.gameState === 'ended') {
       return
     }
+
+    if (this.gameTimer) {
+      clearInterval(this.gameTimer)
+      this.gameTimer = undefined
+    }
+
+    // If the winner was determined before the
+    // maximum game duration, clear the game end timer.
+    if (this.gameEndTimer) {
+      clearTimeout(this.gameEndTimer)
+      this.gameEndTimer = undefined
+    }
+
+    // Determine the winner.
+    const winningTeam = this.getWinner()
 
     this.room.broadcast(
       JSON.stringify({
@@ -128,26 +200,10 @@ export default class GameServer implements Party.Server {
 
     this.gameState = 'ended'
     this.lastWinner = winningTeam
+
     this.room.storage.put('gameState', this.gameState)
+    this.room.storage.put('timeElapsed', 0)
     this.room.storage.put('lastWinner', this.lastWinner)
-  }
-
-  private resetGame(): void {
-    this.gameState = 'waiting'
-    this.score = 0
-    this.lastWinner = undefined
-    this.room.storage.put('gameState', this.gameState)
-    this.room.storage.put('score', this.score)
-    this.room.storage.put('lastWinner', undefined)
-
-    this.room.broadcast(
-      JSON.stringify({
-        type: 'game-state',
-        payload: {
-          nextState: 'waiting',
-        },
-      } satisfies ServerMessageType),
-    )
   }
 
   private handlePull(team: GameTeam): void {
@@ -171,15 +227,26 @@ export default class GameServer implements Party.Server {
     )
     this.room.storage.put('score', this.score)
 
-    const winningTeam =
-      this.score === MIN_SCORE
-        ? 'team-left'
-        : this.score === MAX_SCORE
-        ? 'team-right'
-        : undefined
+    if (this.getEarlyWinner()) {
+      this.endGame()
+    }
+  }
 
-    if (winningTeam) {
-      this.endGame(winningTeam)
+  private getEarlyWinner(): GameTeam | undefined {
+    return this.score === MIN_SCORE
+      ? 'team-left'
+      : this.score === MAX_SCORE
+      ? 'team-right'
+      : undefined
+  }
+
+  private getWinner(): GameTeam | undefined {
+    if (this.score > 0) {
+      return 'team-right'
+    }
+
+    if (this.score < 0) {
+      return 'team-left'
     }
   }
 }
