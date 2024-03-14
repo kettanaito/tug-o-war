@@ -88,6 +88,8 @@ export default class GameServer implements Party.Server {
   onMessage(rawMessage: string, sender: Party.Connection<unknown>) {
     const message = JSON.parse(rawMessage) as ClientMessageType
 
+    console.log('[server] incoming:', message)
+
     switch (message.type) {
       case 'admin/ready': {
         this.startGame()
@@ -125,7 +127,7 @@ export default class GameServer implements Party.Server {
           payload: {
             timeElapsed: this.timeElapsed,
           },
-        } satisfies ServerMessageType),
+        } satisfies ServerMessageType)
       )
     }, 1_000)
 
@@ -140,7 +142,7 @@ export default class GameServer implements Party.Server {
         payload: {
           nextState: 'playing',
         },
-      } satisfies ServerMessageType),
+      } satisfies ServerMessageType)
     )
   }
 
@@ -164,7 +166,7 @@ export default class GameServer implements Party.Server {
         payload: {
           nextState: 'waiting',
         },
-      } satisfies ServerMessageType),
+      } satisfies ServerMessageType)
     )
   }
 
@@ -195,7 +197,7 @@ export default class GameServer implements Party.Server {
           nextState: 'ended',
           winningTeam,
         },
-      } satisfies ServerMessageType),
+      } satisfies ServerMessageType)
     )
 
     this.gameState = 'ended'
@@ -207,6 +209,8 @@ export default class GameServer implements Party.Server {
   }
 
   private handlePull(team: GameTeam): void {
+    console.log('[server] handlePull', team, this.gameState)
+
     if (this.gameState !== 'playing') {
       return
     }
@@ -214,7 +218,7 @@ export default class GameServer implements Party.Server {
     const scoreDelta = team === 'team-left' ? -10 : 10
     this.score = Math.max(
       MIN_SCORE,
-      Math.min(MAX_SCORE, this.score + scoreDelta),
+      Math.min(MAX_SCORE, this.score + scoreDelta)
     )
 
     this.room.broadcast(
@@ -223,7 +227,7 @@ export default class GameServer implements Party.Server {
         payload: {
           nextScore: this.score,
         },
-      } satisfies ServerMessageType),
+      } satisfies ServerMessageType)
     )
     this.room.storage.put('score', this.score)
 

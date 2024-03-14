@@ -22,7 +22,7 @@ export function TugOWar({
   const [gameState, setGameState] = useState(initialGameState)
   const [gameScore, setGameScore] = useState(initialScore)
   const [winningTeam, setWinningTeam] = useState<GameTeam | undefined>(
-    lastWinner,
+    lastWinner
   )
   const [timeElapsed, setTimeElapsed] = useState(initialTimeElapsed ?? 0)
 
@@ -31,6 +31,8 @@ export function TugOWar({
     room: 'index',
     onMessage(event) {
       const message = JSON.parse(event.data) as ServerMessageType
+
+      console.log('[component] message:', message)
 
       switch (message.type) {
         case 'game-state': {
@@ -68,18 +70,18 @@ export function TugOWar({
         payload: {
           team,
         },
-      } satisfies ClientMessageType),
+      } satisfies ClientMessageType)
     )
   }
 
   const handleReady = () => {
     socket.send(
-      JSON.stringify({ type: 'admin/ready' } satisfies ClientMessageType),
+      JSON.stringify({ type: 'admin/ready' } satisfies ClientMessageType)
     )
   }
   const handleReset = () => {
     socket.send(
-      JSON.stringify({ type: 'admin/reset' } satisfies ClientMessageType),
+      JSON.stringify({ type: 'admin/reset' } satisfies ClientMessageType)
     )
   }
 

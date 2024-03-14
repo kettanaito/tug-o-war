@@ -1,25 +1,12 @@
 {
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["public/build", "build"],
-  "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2019"],
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
-    "target": "ES2019",
-    "module": "ES2022",
-    "strict": true,
-    "allowJs": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./app/*"]
+  "extends": "./tsconfig.base.json",
+  "include": ["**/*.ts"],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
     },
-
-    // Remix takes care of building everything in `remix build`.
-    "noEmit": true,
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
-  }
+    {
+      "path": "./tsconfig.test.json"
+    }
+  ]
 }
