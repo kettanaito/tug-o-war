@@ -8,6 +8,9 @@ import type {
 } from 'party/game'
 import { GameEnd } from './game-end'
 
+export const WEBSOCKET_SERVER_PARTY = 'game'
+export const WEBSOCKET_SERVER_ROOM = 'index'
+
 export function TugOWar({
   initialGameState,
   initialScore,
@@ -27,8 +30,8 @@ export function TugOWar({
   const [timeElapsed, setTimeElapsed] = useState(initialTimeElapsed ?? 0)
 
   const socket = usePartySocket({
-    party: 'game',
-    room: 'index',
+    party: WEBSOCKET_SERVER_PARTY,
+    room: WEBSOCKET_SERVER_ROOM,
     onMessage(event) {
       const message = JSON.parse(event.data) as ServerMessageType
 

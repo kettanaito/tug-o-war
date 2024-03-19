@@ -3,9 +3,15 @@ import { act, render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { server } from '~/mocks/node'
 import type { ServerMessageType, ClientMessageType } from '../../party/game'
-import { TugOWar } from './tug-o-war'
+import {
+  TugOWar,
+  WEBSOCKET_SERVER_PARTY,
+  WEBSOCKET_SERVER_ROOM,
+} from './tug-o-war'
 
-const game = ws.link('ws://localhost:3000/parties/game/index')
+const game = ws.link(
+  `ws://localhost:3000/parties/${WEBSOCKET_SERVER_PARTY}/${WEBSOCKET_SERVER_ROOM}`,
+)
 
 it('starts in a waiting mode', async () => {
   render(
