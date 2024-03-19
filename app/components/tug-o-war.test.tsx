@@ -7,10 +7,6 @@ import { TugOWar } from './tug-o-war'
 
 const game = ws.link('ws://localhost:3000/parties/game/index')
 
-afterEach(() => {
-  server.resetHandlers()
-})
-
 it('starts in a waiting mode', async () => {
   render(
     <TugOWar
@@ -124,7 +120,7 @@ it('emits the "pull" event when pulling the rope to the left', async () => {
   })
 })
 
-it('shows a winning screen once one side wins', async () => {
+it('shows the winning screen once one side wins', async () => {
   server.use(
     game.on('connection', ({ client }) => {
       // Send the game state change from the server on the
