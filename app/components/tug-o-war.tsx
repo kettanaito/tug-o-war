@@ -22,7 +22,7 @@ export function TugOWar({
   const [gameState, setGameState] = useState(initialGameState)
   const [gameScore, setGameScore] = useState(initialScore)
   const [winningTeam, setWinningTeam] = useState<GameTeam | undefined>(
-    lastWinner
+    lastWinner,
   )
   const [timeElapsed, setTimeElapsed] = useState(initialTimeElapsed ?? 0)
 
@@ -70,18 +70,18 @@ export function TugOWar({
         payload: {
           team,
         },
-      } satisfies ClientMessageType)
+      } satisfies ClientMessageType),
     )
   }
 
   const handleReady = () => {
     socket.send(
-      JSON.stringify({ type: 'admin/ready' } satisfies ClientMessageType)
+      JSON.stringify({ type: 'admin/ready' } satisfies ClientMessageType),
     )
   }
   const handleReset = () => {
     socket.send(
-      JSON.stringify({ type: 'admin/reset' } satisfies ClientMessageType)
+      JSON.stringify({ type: 'admin/reset' } satisfies ClientMessageType),
     )
   }
 
@@ -90,7 +90,7 @@ export function TugOWar({
       {gameState === 'ended' ? (
         <>
           <GameEnd winningTeam={winningTeam!} />
-          <button className="h-32 w-32" onClick={handleReset}>
+          <button className="w-32 h-32" onClick={handleReset}>
             Reset game
           </button>
         </>
@@ -105,14 +105,22 @@ export function TugOWar({
             step={10}
             value={gameScore}
           />
-          <button className="h-32 w-32" onClick={() => addScore('team-left')}>
+          <button
+            className="w-32 h-32"
+            onClick={() => addScore('team-left')}
+            disabled={gameState !== 'playing'}
+          >
             Left
           </button>
-          <button className="h-32 w-32" onClick={() => addScore('team-right')}>
+          <button
+            className="w-32 h-32"
+            onClick={() => addScore('team-right')}
+            disabled={gameState !== 'playing'}
+          >
             Right
           </button>
 
-          <button className="h-32 w-32" onClick={handleReady}>
+          <button className="w-32 h-32" onClick={handleReady}>
             READY!
           </button>
         </>

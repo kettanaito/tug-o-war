@@ -9,11 +9,9 @@ export function GameEnd({
     <div>
       <h2>The game is over!</h2>
       {winningTeam ? (
-        <p>
-          <strong>{winningTeam}</strong> has won!
-        </p>
+        <p>{winningTeam} has won!</p>
       ) : (
-        <p>It is a draw!</p>
+        <p>Looks like it's a draw!</p>
       )}
     </div>
   )

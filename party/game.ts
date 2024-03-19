@@ -5,6 +5,7 @@ const MAX_SCORE = 100
 
 export type GameTeam = 'team-left' | 'team-right'
 export type GameState = 'waiting' | 'playing' | 'ended'
+const PRE_GAME_TIMEOUT = 3_000
 const GAME_DURATION_MS = 15_000
 
 export type ServerMessageType =
@@ -56,6 +57,7 @@ export default class GameServer implements Party.Server {
   timeElapsed = 0
   lastWinner?: GameTeam
 
+  private preGameTimer?: NodeJS.Timeout
   private gameTimer?: NodeJS.Timeout
   private gameEndTimer?: NodeJS.Timeout
 
@@ -127,7 +129,7 @@ export default class GameServer implements Party.Server {
           payload: {
             timeElapsed: this.timeElapsed,
           },
-        } satisfies ServerMessageType)
+        } satisfies ServerMessageType),
       )
     }, 1_000)
 
@@ -136,14 +138,29 @@ export default class GameServer implements Party.Server {
       this.endGame()
     }, GAME_DURATION_MS)
 
-    this.room.broadcast(
-      JSON.stringify({
-        type: 'game-state',
-        payload: {
-          nextState: 'playing',
-        },
-      } satisfies ServerMessageType)
-    )
+    // Broadcast the pre-game timer for the players to prepare.
+    setInterval(() => {
+      this.room.broadcast(
+        JSON.stringify({
+          type: 'game-state',
+          payload: {
+            nextState: 'playing',
+          },
+        } satisfies ServerMessageType),
+      )
+    }, 1_000)
+
+    // Start the game when the pre-game timer ends.
+    setTimeout(() => {
+      this.room.broadcast(
+        JSON.stringify({
+          type: 'game-state',
+          payload: {
+            nextState: 'playing',
+          },
+        } satisfies ServerMessageType),
+      )
+    }, PRE_GAME_TIMEOUT)
   }
 
   private resetGame(): void {
@@ -166,7 +183,7 @@ export default class GameServer implements Party.Server {
         payload: {
           nextState: 'waiting',
         },
-      } satisfies ServerMessageType)
+      } satisfies ServerMessageType),
     )
   }
 
@@ -197,7 +214,7 @@ export default class GameServer implements Party.Server {
           nextState: 'ended',
           winningTeam,
         },
-      } satisfies ServerMessageType)
+      } satisfies ServerMessageType),
     )
 
     this.gameState = 'ended'
@@ -218,7 +235,7 @@ export default class GameServer implements Party.Server {
     const scoreDelta = team === 'team-left' ? -10 : 10
     this.score = Math.max(
       MIN_SCORE,
-      Math.min(MAX_SCORE, this.score + scoreDelta)
+      Math.min(MAX_SCORE, this.score + scoreDelta),
     )
 
     this.room.broadcast(
@@ -227,7 +244,7 @@ export default class GameServer implements Party.Server {
         payload: {
           nextScore: this.score,
         },
-      } satisfies ServerMessageType)
+      } satisfies ServerMessageType),
     )
     this.room.storage.put('score', this.score)
 
