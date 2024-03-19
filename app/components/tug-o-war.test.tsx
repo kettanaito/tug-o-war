@@ -10,7 +10,7 @@ import {
 } from './tug-o-war'
 
 const game = ws.link(
-  `ws://localhost:3000/parties/${WEBSOCKET_SERVER_PARTY}/${WEBSOCKET_SERVER_ROOM}`,
+  `ws://*/parties/${WEBSOCKET_SERVER_PARTY}/${WEBSOCKET_SERVER_ROOM}`,
 )
 
 it('starts in a waiting mode', async () => {
