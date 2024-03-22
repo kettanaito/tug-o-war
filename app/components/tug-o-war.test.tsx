@@ -1,5 +1,5 @@
 import { ws } from 'msw'
-import { act, render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { server } from '~/mocks/node'
 import type { ServerMessageType, ClientMessageType } from '../../party/game'
@@ -56,7 +56,7 @@ it('enables pulling buttons once the server starts the game', async () => {
   const pullLeftButton = screen.getByRole('button', { name: /left/i })
 
   // Once the server starts the game, the pull buttons are enabled.
-  await vi.waitFor(() => {
+  await waitFor(() => {
     expect(pullRightButton).toBeEnabled()
     expect(pullLeftButton).toBeEnabled()
   })
@@ -81,10 +81,10 @@ it('emits the "pull" event when pulling the rope to the right', async () => {
   )
 
   const pullRightButton = screen.getByRole('button', { name: /right/i })
-  await act(() => userEvent.click(pullRightButton))
+  await userEvent.click(pullRightButton)
 
   // Clicking on the pull button emits the event to the server.
-  await vi.waitFor(() => {
+  await waitFor(() => {
     expect(clientMessageListener).toHaveBeenLastCalledWith({
       type: 'pull',
       payload: {
@@ -113,10 +113,10 @@ it('emits the "pull" event when pulling the rope to the left', async () => {
   )
 
   const pullLeftButton = screen.getByRole('button', { name: /left/i })
-  await act(() => userEvent.click(pullLeftButton))
+  await userEvent.click(pullLeftButton)
 
   // Clicking on the pull button emits the event to the server.
-  await vi.waitFor(() => {
+  await waitFor(() => {
     expect(clientMessageListener).toHaveBeenLastCalledWith({
       type: 'pull',
       payload: {

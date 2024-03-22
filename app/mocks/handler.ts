@@ -1,5 +1,9 @@
 import { ws } from 'msw'
 
-export const game = ws.link('ws://127.0.0.1:3009/parties/game/index')
+export const game = ws.link('ws://*/parties/game/index')
 
-export const handlers = []
+export const handlers = [
+  game.on('connection', ({ client }) => {
+    client.send(JSON.stringify({ text: 'hello world' }))
+  }),
+]

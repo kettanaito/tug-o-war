@@ -35,8 +35,6 @@ export function TugOWar({
     onMessage(event) {
       const message = JSON.parse(event.data) as ServerMessageType
 
-      console.log('[component] message:', message)
-
       switch (message.type) {
         case 'game-state': {
           setGameState(message.payload.nextState)
