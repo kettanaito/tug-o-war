@@ -3,8 +3,9 @@ export function Orientation() {
     <aside
       style={{
         position: 'fixed',
+        padding: '1rem',
         top: 0,
-        right: 0,
+        left: 0,
         height: '100%',
         width: '100%',
         backgroundColor: 'white',

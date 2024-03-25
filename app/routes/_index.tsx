@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { json, useLoaderData } from '@remix-run/react'
 import type {
   LinksFunction,
@@ -64,13 +64,11 @@ export default function Index() {
     lastWinner,
   } = useLoaderData<typeof loader>()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     function checkOrientationAndUpdate() {
-      if (screen.orientation.type.includes('landscape')) {
-        setDisplayOrientationScreen(false)
-      } else {
-        setDisplayOrientationScreen(true)
-      }
+      setDisplayOrientationScreen(
+        !screen.orientation.type.includes('landscape'),
+      )
     }
     checkOrientationAndUpdate()
 
