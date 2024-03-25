@@ -3,7 +3,10 @@ import { ws } from 'msw'
 export const game = ws.link('ws://*/parties/game/index')
 
 export const handlers = [
-  game.on('connection', ({ client }) => {
-    client.send(JSON.stringify({ text: 'hello world' }))
+  game.on('connection', ({ client, server }) => {
+    server.connect()
+    client.addEventListener('message', (event) => {
+      server.send(event.data)
+    })
   }),
 ]

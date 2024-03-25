@@ -30,20 +30,27 @@ export const loader: LoaderFunction = async function ({
   return json({
     initialGameState: initialState.gameState,
     initialScore: initialState.score,
+    initialCountdown: initialState.countdown,
     initialTimeElapsed: initialState.timeElapsed,
     lastWinner: initialState.lastWinner,
   })
 }
 
 export default function Index() {
-  const { initialGameState, initialScore, initialTimeElapsed, lastWinner } =
-    useLoaderData<typeof loader>()
+  const {
+    initialGameState,
+    initialScore,
+    initialCountdown,
+    initialTimeElapsed,
+    lastWinner,
+  } = useLoaderData<typeof loader>()
 
   return (
     <div>
       <TugOWar
         initialGameState={initialGameState}
         initialScore={initialScore}
+        initialCountdown={initialCountdown}
         initialTimeElapsed={initialTimeElapsed}
         lastWinner={lastWinner}
       />

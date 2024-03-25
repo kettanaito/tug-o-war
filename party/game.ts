@@ -1,35 +1,47 @@
 import type * as Party from 'partykit/server'
+import { DeferredPromise } from '@open-draft/deferred-promise'
 
 const MIN_SCORE = -100
 const MAX_SCORE = 100
 
+export enum GameState {
+  IDLE = 'IDLE',
+  PLAYING = 'PLAYING',
+  END = 'END',
+}
+
 export type GameTeam = 'team-left' | 'team-right'
-export type GameState = 'waiting' | 'playing' | 'ended'
-const PRE_GAME_TIMEOUT = 3_000
+const COUNTDOWN_SECONDS = 3
 const GAME_DURATION_MS = 15_000
 
 export type ServerMessageType =
   | {
-      type: 'score'
+      type: 'game/score'
       payload: {
         nextScore: number
       }
     }
   | {
-      type: 'game-state'
+      type: 'game/state-change'
       payload:
         | {
-            nextState: 'waiting' | 'playing'
+            nextState: GameState.IDLE | GameState.PLAYING
           }
         | {
-            nextState: 'ended'
+            nextState: GameState.END
             winningTeam: GameTeam | undefined
           }
     }
   | {
-      type: 'game-time'
+      type: 'time/elapsed'
       payload: {
         timeElapsed: number
+      }
+    }
+  | {
+      type: 'time/countdown'
+      payload: {
+        countdown: number
       }
     }
 
@@ -53,11 +65,11 @@ export default class GameServer implements Party.Server {
   }
 
   score = 0
-  gameState: GameState = 'waiting'
+  gameState: GameState = GameState.IDLE
+  countdown = COUNTDOWN_SECONDS
   timeElapsed = 0
   lastWinner?: GameTeam
 
-  private preGameTimer?: NodeJS.Timeout
   private gameTimer?: NodeJS.Timeout
   private gameEndTimer?: NodeJS.Timeout
 
@@ -65,7 +77,8 @@ export default class GameServer implements Party.Server {
 
   async onStart() {
     this.score = (await this.room.storage.get('score')) ?? 0
-    this.gameState = (await this.room.storage.get('gameState')) ?? 'waiting'
+    this.gameState =
+      (await this.room.storage.get('gameState')) ?? GameState.IDLE
     this.timeElapsed = (await this.room.storage.get('timeElapsed')) ?? 0
     this.lastWinner = await this.room.storage.get('lastWinner')
   }
@@ -90,8 +103,6 @@ export default class GameServer implements Party.Server {
   onMessage(rawMessage: string, sender: Party.Connection<unknown>) {
     const message = JSON.parse(rawMessage) as ClientMessageType
 
-    console.log('[server] incoming:', message)
-
     switch (message.type) {
       case 'admin/ready': {
         this.startGame()
@@ -110,22 +121,33 @@ export default class GameServer implements Party.Server {
     }
   }
 
-  private startGame(): void {
-    if (this.gameState === 'playing') {
+  private async startGame(): Promise<void> {
+    if (this.gameState !== GameState.IDLE) {
       return
     }
 
-    this.gameState = 'playing'
-    this.room.storage.put('gameState', this.gameState)
+    // Start and await the countdown for players.
+    await this.startCountdown()
 
-    // Broadcast the time elapsed every second.
+    // Broadcast the start of the game.
+    this.gameState = GameState.PLAYING
+    this.room.storage.put('gameState', this.gameState)
+    this.room.broadcast(
+      JSON.stringify({
+        type: 'game/state-change',
+        payload: {
+          nextState: GameState.PLAYING,
+        },
+      } satisfies ServerMessageType),
+    )
+
+    // Broadcast the elapsed game time.
     this.gameTimer = setInterval(() => {
       this.timeElapsed += 1
-
       this.room.storage.put('timeElapsed', this.timeElapsed)
       this.room.broadcast(
         JSON.stringify({
-          type: 'game-time',
+          type: 'time/elapsed',
           payload: {
             timeElapsed: this.timeElapsed,
           },
@@ -133,38 +155,50 @@ export default class GameServer implements Party.Server {
       )
     }, 1_000)
 
-    // End the game if it hasn't ended in X seconds.
+    // Forcefully end the game after a timeout.
     this.gameEndTimer = setTimeout(() => {
       this.endGame()
     }, GAME_DURATION_MS)
+  }
 
-    // Broadcast the pre-game timer for the players to prepare.
-    setInterval(() => {
+  private startCountdown(): Promise<void> {
+    const countdownPromise = new DeferredPromise<void>()
+
+    this.room.broadcast(
+      JSON.stringify({
+        type: 'time/countdown',
+        payload: {
+          countdown: this.countdown,
+        },
+      } satisfies ServerMessageType),
+    )
+
+    const countdownTimer = setInterval(() => {
+      this.countdown -= 1
+
+      // Send the countdown state to the client.
       this.room.broadcast(
         JSON.stringify({
-          type: 'game-state',
+          type: 'time/countdown',
           payload: {
-            nextState: 'playing',
+            countdown: this.countdown,
           },
         } satisfies ServerMessageType),
       )
+
+      if (this.countdown === 0) {
+        this.countdown = COUNTDOWN_SECONDS
+        clearInterval(countdownTimer)
+        countdownPromise.resolve()
+        return
+      }
     }, 1_000)
 
-    // Start the game when the pre-game timer ends.
-    setTimeout(() => {
-      this.room.broadcast(
-        JSON.stringify({
-          type: 'game-state',
-          payload: {
-            nextState: 'playing',
-          },
-        } satisfies ServerMessageType),
-      )
-    }, PRE_GAME_TIMEOUT)
+    return countdownPromise
   }
 
   private resetGame(): void {
-    this.gameState = 'waiting'
+    this.gameState = GameState.IDLE
     this.score = 0
     this.timeElapsed = 0
 
@@ -179,16 +213,16 @@ export default class GameServer implements Party.Server {
 
     this.room.broadcast(
       JSON.stringify({
-        type: 'game-state',
+        type: 'game/state-change',
         payload: {
-          nextState: 'waiting',
+          nextState: GameState.IDLE,
         },
       } satisfies ServerMessageType),
     )
   }
 
   private endGame(): void {
-    if (this.gameState === 'ended') {
+    if (this.gameState === GameState.END) {
       return
     }
 
@@ -209,15 +243,15 @@ export default class GameServer implements Party.Server {
 
     this.room.broadcast(
       JSON.stringify({
-        type: 'game-state',
+        type: 'game/state-change',
         payload: {
-          nextState: 'ended',
+          nextState: GameState.END,
           winningTeam,
         },
       } satisfies ServerMessageType),
     )
 
-    this.gameState = 'ended'
+    this.gameState = GameState.END
     this.lastWinner = winningTeam
 
     this.room.storage.put('gameState', this.gameState)
@@ -226,9 +260,7 @@ export default class GameServer implements Party.Server {
   }
 
   private handlePull(team: GameTeam): void {
-    console.log('[server] handlePull', team, this.gameState)
-
-    if (this.gameState !== 'playing') {
+    if (this.gameState !== GameState.PLAYING) {
       return
     }
 
@@ -240,7 +272,7 @@ export default class GameServer implements Party.Server {
 
     this.room.broadcast(
       JSON.stringify({
-        type: 'score',
+        type: 'game/score',
         payload: {
           nextScore: this.score,
         },
@@ -257,8 +289,8 @@ export default class GameServer implements Party.Server {
     return this.score === MIN_SCORE
       ? 'team-left'
       : this.score === MAX_SCORE
-      ? 'team-right'
-      : undefined
+        ? 'team-right'
+        : undefined
   }
 
   private getWinner(): GameTeam | undefined {

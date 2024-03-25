@@ -1,11 +1,7 @@
 import { useState } from 'react'
 import usePartySocket from 'partysocket/react'
-import type {
-  ClientMessageType,
-  GameState,
-  GameTeam,
-  ServerMessageType,
-} from 'party/game'
+import { GameState } from 'party/game'
+import type { ClientMessageType, GameTeam, ServerMessageType } from 'party/game'
 import { GameEnd } from './game-end'
 
 export const WEBSOCKET_SERVER_PARTY = 'game'
@@ -14,11 +10,13 @@ export const WEBSOCKET_SERVER_ROOM = 'index'
 export function TugOWar({
   initialGameState,
   initialScore,
+  initialCountdown,
   initialTimeElapsed,
   lastWinner,
 }: {
   initialGameState: GameState
   initialScore: number
+  initialCountdown?: number
   initialTimeElapsed?: number
   lastWinner?: GameTeam
 }) {
@@ -27,6 +25,7 @@ export function TugOWar({
   const [winningTeam, setWinningTeam] = useState<GameTeam | undefined>(
     lastWinner,
   )
+  const [countdown, setCountdown] = useState(initialCountdown ?? 0)
   const [timeElapsed, setTimeElapsed] = useState(initialTimeElapsed ?? 0)
 
   const socket = usePartySocket({
@@ -36,27 +35,31 @@ export function TugOWar({
       const message = JSON.parse(event.data) as ServerMessageType
 
       switch (message.type) {
-        case 'game-state': {
+        case 'game/state-change': {
           setGameState(message.payload.nextState)
 
-          if (message.payload.nextState === 'waiting' && gameScore !== 0) {
+          if (message.payload.nextState === GameState.IDLE && gameScore !== 0) {
             setTimeElapsed(0)
             setGameScore(0)
           }
 
-          if (message.payload.nextState === 'ended') {
+          if (message.payload.nextState === GameState.END) {
             setWinningTeam(message.payload.winningTeam)
           }
           break
         }
 
-        case 'score': {
+        case 'game/score': {
           setGameScore(message.payload.nextScore)
           break
         }
 
-        case 'game-time': {
-          console.log('GAME TIME', message.payload)
+        case 'time/countdown': {
+          setCountdown(message.payload.countdown)
+          break
+        }
+
+        case 'time/elapsed': {
           setTimeElapsed(message.payload.timeElapsed)
           break
         }
@@ -88,44 +91,67 @@ export function TugOWar({
 
   return (
     <div>
-      {gameState === 'ended' ? (
-        <>
-          <GameEnd winningTeam={winningTeam!} />
-          <button className="w-32 h-32" onClick={handleReset}>
-            Reset game
-          </button>
-        </>
-      ) : (
-        <>
-          <h2>00:{timeElapsed.toString().padStart(2, '0')}</h2>
-          <input
-            name="rope"
-            type="range"
-            min={-100}
-            max={100}
-            step={10}
-            value={gameScore}
-          />
-          <button
-            className="w-32 h-32"
-            onClick={() => addScore('team-left')}
-            disabled={gameState !== 'playing'}
-          >
-            Left
-          </button>
-          <button
-            className="w-32 h-32"
-            onClick={() => addScore('team-right')}
-            disabled={gameState !== 'playing'}
-          >
-            Right
-          </button>
+      {(() => {
+        switch (gameState) {
+          case GameState.END: {
+            return (
+              <>
+                <GameEnd winningTeam={winningTeam!} />
+                <button className="h-32 w-32" onClick={handleReset}>
+                  Reset game
+                </button>
+              </>
+            )
+          }
 
-          <button className="w-32 h-32" onClick={handleReady}>
-            READY!
-          </button>
-        </>
-      )}
+          default: {
+            return (
+              <>
+                {countdown > 0 ? <h1>{countdown}</h1> : null}
+                <h2>00:{timeElapsed.toString().padStart(2, '0')}</h2>
+                <input
+                  name="rope"
+                  type="range"
+                  min={-100}
+                  max={100}
+                  step={10}
+                  value={gameScore}
+                />
+                <button
+                  className="h-32 w-32"
+                  onClick={() => addScore('team-left')}
+                  disabled={gameState !== GameState.PLAYING}
+                >
+                  Left
+                </button>
+                <button
+                  className="h-32 w-32"
+                  onClick={() => addScore('team-right')}
+                  disabled={gameState !== GameState.PLAYING}
+                >
+                  Right
+                </button>
+
+                <button className="h-32 w-32" onClick={handleReady}>
+                  READY!
+                </button>
+                <button
+                  className="h-32 w-32"
+                  onClick={() => {
+                    socket.send(
+                      JSON.stringify({
+                        type: 'admin/reset',
+                      } satisfies ClientMessageType),
+                    )
+                  }}
+                >
+                  Reset
+                </button>
+              </>
+            )
+          }
+        }
+      })()}
     </div>
   )
 }
