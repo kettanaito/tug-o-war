@@ -1,5 +1,12 @@
+import { useLayoutEffect, useState } from 'react'
 import { json, useLoaderData } from '@remix-run/react'
-import type { LoaderFunction, LoaderFunctionArgs, MetaFunction } from 'partymix'
+import type {
+  LinksFunction,
+  LoaderFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from 'partymix'
+import { Orientation } from '~/components/orientation'
 import { TugOWar } from '~/components/tug-o-war'
 
 export const meta: MetaFunction = () => {
@@ -10,6 +17,15 @@ export const meta: MetaFunction = () => {
     {
       name: 'description',
       content: 'Realtime game of tug-o-war with Remix, PartyKit, and MSW',
+    },
+  ]
+}
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: 'manifest',
+      href: '/manifest.json',
     },
   ]
 }
@@ -37,6 +53,9 @@ export const loader: LoaderFunction = async function ({
 }
 
 export default function Index() {
+  const [displayOrientationScreen, setDisplayOrientationScreen] = useState<
+    boolean | undefined
+  >(undefined)
   const {
     initialGameState,
     initialScore,
@@ -45,8 +64,33 @@ export default function Index() {
     lastWinner,
   } = useLoaderData<typeof loader>()
 
+  useLayoutEffect(() => {
+    function checkOrientationAndUpdate() {
+      if (screen.orientation.type.includes('landscape')) {
+        setDisplayOrientationScreen(false)
+      } else {
+        setDisplayOrientationScreen(true)
+      }
+    }
+    checkOrientationAndUpdate()
+
+    screen.orientation.addEventListener('change', checkOrientationAndUpdate)
+
+    return () => {
+      screen.orientation.removeEventListener(
+        'change',
+        checkOrientationAndUpdate,
+      )
+    }
+  }, [])
+
+  if (displayOrientationScreen === undefined) {
+    return null
+  }
+
   return (
     <div>
+      {displayOrientationScreen ? <Orientation /> : null}
       <TugOWar
         initialGameState={initialGameState}
         initialScore={initialScore}
