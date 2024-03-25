@@ -2,7 +2,11 @@ import { ws } from 'msw'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { server } from '~/mocks/node'
-import type { ServerMessageType, ClientMessageType } from '../../party/game'
+import {
+  type ServerMessageType,
+  type ClientMessageType,
+  GameState,
+} from '../../party/game'
 import {
   TugOWar,
   WEBSOCKET_SERVER_PARTY,
@@ -16,7 +20,7 @@ const game = ws.link(
 it('starts in a waiting mode', async () => {
   render(
     <TugOWar
-      initialGameState="waiting"
+      initialGameState={GameState.IDLE}
       initialScore={0}
       initialTimeElapsed={0}
     />,
@@ -35,9 +39,9 @@ it('enables pulling buttons once the server starts the game', async () => {
     game.on('connection', ({ client }) => {
       client.send(
         JSON.stringify({
-          type: 'game-state',
+          type: 'game/state-change',
           payload: {
-            nextState: 'playing',
+            nextState: GameState.PLAYING,
           },
         } satisfies ServerMessageType),
       )
@@ -46,7 +50,7 @@ it('enables pulling buttons once the server starts the game', async () => {
 
   render(
     <TugOWar
-      initialGameState="waiting"
+      initialGameState={GameState.IDLE}
       initialScore={0}
       initialTimeElapsed={0}
     />,
@@ -74,7 +78,7 @@ it('emits the "pull" event when pulling the rope to the right', async () => {
 
   render(
     <TugOWar
-      initialGameState="playing"
+      initialGameState={GameState.PLAYING}
       initialScore={0}
       initialTimeElapsed={0}
     />,
@@ -106,7 +110,7 @@ it('emits the "pull" event when pulling the rope to the left', async () => {
 
   render(
     <TugOWar
-      initialGameState="playing"
+      initialGameState={GameState.PLAYING}
       initialScore={0}
       initialTimeElapsed={0}
     />,
@@ -134,9 +138,9 @@ it('shows the winning screen once one side wins', async () => {
       queueMicrotask(() => {
         client.send(
           JSON.stringify({
-            type: 'game-state',
+            type: 'game/state-change',
             payload: {
-              nextState: 'ended',
+              nextState: GameState.END,
               winningTeam: 'team-right',
             },
           } satisfies ServerMessageType),
@@ -147,7 +151,7 @@ it('shows the winning screen once one side wins', async () => {
 
   render(
     <TugOWar
-      initialGameState="playing"
+      initialGameState={GameState.PLAYING}
       initialScore={0}
       initialTimeElapsed={0}
     />,
