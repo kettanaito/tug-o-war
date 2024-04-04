@@ -1,51 +1,68 @@
-import type { MetaFunction } from '@remix-run/node'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { LoaderFunctionArgs, json } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
+import { Orientation } from '~/components/orientation.tsx'
+import { TugOWar } from '~/components/tug-o-war.tsx'
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: 'New Remix App' },
-    { name: 'description', content: 'Welcome to Remix!' },
-  ]
+export async function loader({ request }: LoaderFunctionArgs) {
+  const initialState = await fetch(new URL('/initial-state', request.url)).then(
+    (response) => response.json(),
+  )
+
+  return json({
+    initialGameState: initialState.gameState,
+    initialScore: initialState.score,
+    initialCountdown: initialState.countdown,
+    initialTimeElapsed: initialState.timeElapsed,
+    lastWinner: initialState.lastWinner,
+  })
 }
 
 export default function Index() {
+  const [displayOrientationScreen, setDisplayOrientationScreen] = useState<
+    boolean | undefined
+  >(undefined)
+
+  const {
+    initialGameState,
+    initialScore,
+    initialCountdown,
+    initialTimeElapsed,
+    lastWinner,
+  } = useLoaderData<typeof loader>()
+
   useEffect(() => {
-    const wsUrl = new URL('/', document.baseURI)
-    wsUrl.protocol = wsUrl.protocol.replace('http', 'ws')
-    const ws = new WebSocket(wsUrl)
-    ws.addEventListener('message', (event) => {
-      console.log('received:', event.data)
-    })
+    function checkOrientationAndUpdate() {
+      setDisplayOrientationScreen(
+        !screen.orientation.type.includes('landscape'),
+      )
+    }
+    checkOrientationAndUpdate()
+
+    screen.orientation.addEventListener('change', checkOrientationAndUpdate)
+
+    return () => {
+      screen.orientation.removeEventListener(
+        'change',
+        checkOrientationAndUpdate,
+      )
+    }
   }, [])
 
+  if (displayOrientationScreen === undefined) {
+    return null
+  }
+
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.8' }}>
-      <h1>Welcome to Remix</h1>
-      <ul className="list-disc">
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
+    <>
+      {displayOrientationScreen ? <Orientation /> : null}
+      <TugOWar
+        initialGameState={initialGameState}
+        initialScore={initialScore}
+        initialCountdown={initialCountdown}
+        initialTimeElapsed={initialTimeElapsed}
+        lastWinner={lastWinner}
+      />
+    </>
   )
 }

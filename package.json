@@ -1,19 +1,20 @@
 {
-  "name": "tug-o-war-express",
+  "name": "tug-o-war",
   "private": true,
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node ./server.js",
+    "start": "cross-env NODE_ENV=production node ./server/build/index.js",
     "dev": "remix dev -c \"npm run dev:server\" --manual",
-    "dev:server": "tsx watch --clear-screen=false --ignore 'app/**' --ignore 'build/**' --ignore 'node_modules/**' --inspect ./server.ts",
+    "dev:server": "tsx watch --clear-screen=false --ignore 'app/**' --ignore 'build/**' --ignore 'node_modules/**' --inspect ./server/index.ts",
     "build": "run-p build:*",
     "build:remix": "remix build",
-    "build:server": "esbuild --platform=node --format=esm ./server.ts --outdir=./",
+    "build:server": "node ./server/build.js",
     "typecheck": "tsc",
     "deploy": "flyctl deploy"
   },
   "dependencies": {
+    "@open-draft/deferred-promise": "^2.2.0",
     "@remix-run/css-bundle": "^2.8.1",
     "@remix-run/express": "^2.8.1",
     "@remix-run/node": "^2.8.1",
@@ -32,6 +33,8 @@
   "devDependencies": {
     "@remix-run/dev": "^2.8.1",
     "@remix-run/eslint-config": "^2.8.1",
+    "@testing-library/react": "^14.2.2",
+    "@testing-library/user-event": "^14.5.2",
     "@types/compression": "^1.7.2",
     "@types/express": "^4.17.17",
     "@types/morgan": "^1.9.4",
@@ -42,13 +45,20 @@
     "chokidar": "^3.5.3",
     "esbuild": "^0.19.4",
     "eslint": "^8.38.0",
+    "msw": "^2.3.0-ws.rc-3",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.3",
     "tsx": "^3.14.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vitest": "^1.4.0"
   },
   "engines": {
     "node": ">=20"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
