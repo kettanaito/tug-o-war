@@ -15,8 +15,8 @@ sourceMapSupport.install()
 /**
  * @typedef {import('@remix-run/node').ServerBuild} ServerBuild
  */
-const BUILD_PATH = '../build/index.js'
-const WATCH_PATH = '../build/version.txt'
+const BUILD_PATH = './build/index.js'
+const WATCH_PATH = './build/version.txt'
 
 /**
  * Initial build

@@ -4,12 +4,12 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node ./app/server.js",
+    "start": "cross-env NODE_ENV=production node ./server.js",
     "dev": "remix dev -c \"npm run dev:server\" --manual",
-    "dev:server": "tsx watch --clear-screen=false --ignore 'app/**' --ignore 'build/**' --ignore 'node_modules/**' --inspect ./server/server.ts",
+    "dev:server": "tsx watch --clear-screen=false --ignore 'app/**' --ignore 'build/**' --ignore 'node_modules/**' --inspect ./server.ts",
     "build": "run-p build:*",
     "build:remix": "remix build",
-    "build:server": "esbuild --platform=node --format=esm ./server/server.ts --outdir=./app",
+    "build:server": "esbuild --platform=node --format=esm ./server.ts --outdir=./",
     "typecheck": "tsc",
     "deploy": "flyctl deploy"
   },
