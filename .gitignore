@@ -8,3 +8,4 @@ node_modules
 yarn.lock
 /server.js
 package-lock.json
+/app/server.js

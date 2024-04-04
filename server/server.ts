@@ -15,8 +15,8 @@ sourceMapSupport.install()
 /**
  * @typedef {import('@remix-run/node').ServerBuild} ServerBuild
  */
-const BUILD_PATH = './build/index.js'
-const WATCH_PATH = './build/version.txt'
+const BUILD_PATH = '../build/index.js'
+const WATCH_PATH = '../build/version.txt'
 
 /**
  * Initial build
@@ -62,7 +62,11 @@ app.all(
 const wss = new WebSocketServer({ server })
 
 wss.on('connection', (ws) => {
-  ws.send('hello from server')
+  setInterval(() => {
+    wss.clients.forEach((client) => {
+      client.send('hello to all!')
+    })
+  }, 3_000)
 })
 
 const port = process.env.PORT || 3000

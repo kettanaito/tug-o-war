@@ -4,13 +4,14 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "start": "cross-env NODE_ENV=production node ./app/server.js",
+    "dev": "remix dev -c \"npm run dev:server\" --manual",
+    "dev:server": "tsx watch --clear-screen=false --ignore 'app/**' --ignore 'build/**' --ignore 'node_modules/**' --inspect ./server/server.ts",
     "build": "run-p build:*",
     "build:remix": "remix build",
-    "build:server": "esbuild --platform=node --format=esm ./server.ts --outdir=./",
-    "dev": "remix dev -c \"npm run dev:server\" --manual",
-    "dev:server": "tsx watch --clear-screen=false --ignore 'app/**' --ignore 'build/**' --ignore 'node_modules/**' --inspect ./server.ts",
-    "start": "cross-env NODE_ENV=production node  server.js",
-    "typecheck": "tsc"
+    "build:server": "esbuild --platform=node --format=esm ./server/server.ts --outdir=./app",
+    "typecheck": "tsc",
+    "deploy": "flyctl deploy"
   },
   "dependencies": {
     "@remix-run/css-bundle": "^2.8.1",
@@ -48,6 +49,6 @@
     "typescript": "^5.0.4"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }
