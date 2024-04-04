@@ -1,5 +1,7 @@
 import * as fs from 'node:fs'
+import * as http from 'node:http'
 import express from 'express'
+import { WebSocketServer } from 'ws'
 import compression from 'compression'
 import morgan from 'morgan'
 import { createRequestHandler, type RequestHandler } from '@remix-run/express'
@@ -27,6 +29,7 @@ const chokidar =
   process.env.NODE_ENV === 'development' ? await import('chokidar') : null
 
 const app = express()
+const server = http.createServer(app)
 
 app.use(compression())
 
@@ -56,9 +59,14 @@ app.all(
       }),
 )
 
-const port = process.env.PORT || 3000
+const wss = new WebSocketServer({ server })
 
-app.listen(port, async () => {
+wss.on('connection', (ws) => {
+  ws.send('hello from server')
+})
+
+const port = process.env.PORT || 3000
+server.listen(port, async () => {
   console.log(`Server is running at http://localhost:${port}`)
 
   // send "ready" message to dev server
