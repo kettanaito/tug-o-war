@@ -65,6 +65,19 @@ export function Arena({
       <div id="arena">
         <div
           style={{
+            background: 'url(/assets/rope.png) top left no-repeat',
+            backgroundSize: 'contain',
+            aspectRatio: '21.2 / 1',
+            height: '3vw',
+            position: 'absolute',
+            top: '39.6%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }}
+        />
+
+        <div
+          style={{
             position: 'absolute',
             top: 'calc(50% - 5vw)',
             left: '50%',
@@ -78,25 +91,25 @@ export function Arena({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '2vw',
+              gap: '1vw',
               marginRight: '10vw',
               transform: `translateX(${teamRightProgress}px)`,
             }}
           >
-            <Character color="red" />
-            <Character color="red" />
+            <Character sprite={1} />
+            <Character sprite={2} />
           </div>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '2vw',
+              gap: '1vw',
               marginLeft: '10vw',
               transform: `translateX(-${teamLeftProgress}px)`,
             }}
           >
-            <Character color="blue" />
-            <Character color="blue" />
+            <Character sprite={3} />
+            <Character sprite={4} />
           </div>
         </div>
       </div>
@@ -127,14 +140,17 @@ export function Arena({
   )
 }
 
-function Character({ color }: { color: string }) {
+function Character({ sprite }: { sprite: 1 | 2 | 3 | 4 }) {
   return (
     <div
+      className="character"
       style={{
+        position: 'relative',
         width: 'auto',
         height: '10vw',
-        aspectRatio: '1/2',
-        background: color,
+        aspectRatio: '1 / 1.22',
+        background: `url(/assets/player-${sprite}.png) no-repeat top left`,
+        backgroundSize: 'contain',
       }}
     />
   )

@@ -35,3 +35,19 @@ body {
   margin: auto;
   width: 90%;
 }
+
+.character::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  transform: translateY(-50%);
+  display: block;
+  content: '';
+  height: 5%;
+  width: 75%;
+  background: #00000070;
+  filter: blur(2px);
+  border-radius: 100%;
+}

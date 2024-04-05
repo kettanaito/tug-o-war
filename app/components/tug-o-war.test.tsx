@@ -1,21 +1,11 @@
 import { ws } from 'msw'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { server } from '~/mocks/node'
-import {
-  type ServerMessageType,
-  type ClientMessageType,
-  GameState,
-} from '../../party/game'
-import {
-  TugOWar,
-  WEBSOCKET_SERVER_PARTY,
-  WEBSOCKET_SERVER_ROOM,
-} from './tug-o-war'
+import { server } from '~/mocks/node.ts'
+import { TugOWar } from './tug-o-war.tsx'
+import { GameState } from '~/messages.ts'
 
-const game = ws.link(
-  `ws://*/parties/${WEBSOCKET_SERVER_PARTY}/${WEBSOCKET_SERVER_ROOM}`,
-)
+const game = ws.link(`ws://*`)
 
 it('starts in a waiting mode', async () => {
   render(
