@@ -1,6 +1,6 @@
 import { ws, RequestHandler, WebSocketLink, WebSocketHandler } from 'msw'
 
-export const game: WebSocketLink = ws.link('ws://*/parties/game/index')
+export const game: WebSocketLink = ws.link('ws://localhost')
 
 export const handlers: Array<RequestHandler | WebSocketHandler> = [
   game.on('connection', ({ client, server }) => {
