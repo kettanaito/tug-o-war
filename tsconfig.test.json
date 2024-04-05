@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": ["vitest.setup.ts", "./app/**/*.test.ts", "./app/**/*.test.tsx"],
+  "references": [
+    // Allow source code imports in tests.
+    { "path": "./tsconfig.app.json" }
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "target": "esnext",
+    "module": "esnext",
+    "types": ["@types/node", "happy-dom", "vitest/globals"]
+  }
+}

@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { server } from '~/mocks/node.ts'
 import { TugOWar } from './tug-o-war.tsx'
-import { GameState } from '~/messages.ts'
+import { GameState, ServerMessageType } from '~/messages.ts'
 
 const game = ws.link(`ws://*`)
 
