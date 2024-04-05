@@ -12,7 +12,7 @@ export function Sign({
         background: 'url(/assets/sign.png) bottom left no-repeat',
         backgroundSize: 'contain',
         height: 'auto',
-        width: 466 / 2,
+        width: '100%',
         aspectRatio: '1.219 / 1',
         maxWidth: '100%',
         color: '#0B0B0B',
