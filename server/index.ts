@@ -1,5 +1,6 @@
 import * as fs from 'node:fs'
 import * as http from 'node:http'
+import { fileURLToPath } from 'node:url'
 import express from 'express'
 import { WebSocketServer } from 'ws'
 import compression from 'compression'
@@ -13,8 +14,12 @@ import { Game } from './Game.js'
 installGlobals()
 sourceMapSupport.install()
 
-const BUILD_PATH = process.env.BUILD_PATH || '../build/index.js'
-const WATCH_PATH = process.env.WATCH_PATH || '../build/version.txt'
+const BUILD_PATH =
+  process.env.BUILD_PATH ||
+  fileURLToPath(new URL('../build/index.js', import.meta.url))
+const WATCH_PATH =
+  process.env.WATCH_PATH ||
+  fileURLToPath(new URL('../build/version.txt', import.meta.url))
 
 // Initial build.
 let build: ServerBuild = await import(BUILD_PATH)
