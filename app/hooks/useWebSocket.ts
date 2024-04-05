@@ -17,7 +17,7 @@ export function useWebSocketClient(
 ): WebSocketClientReturnType {
   const wsRef = useRef<WebSocket>()
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const wsUrl = new URL('/', document.baseURI)
     wsUrl.protocol = wsUrl.protocol.replace('http', 'ws')
     const ws = new WebSocket(wsUrl)
@@ -40,11 +40,28 @@ export function useWebSocketClient(
     return () => {
       ws.close()
     }
-  }, [])
+  })
 
   return {
     send(data) {
       wsRef.current?.send(data)
     },
   }
+}
+
+// Introduce this custom React hook to run any given effect
+// ONCE. In Strict mode, React will run all useEffect's twice,
+// which will trigger a WebSocket connection and then immediately
+// close it, causing the "closed before could connect" error.
+function useEffectOnce(callback: () => void) {
+  const isUsedRef = useRef(false)
+
+  useEffect(() => {
+    if (isUsedRef.current) {
+      return
+    }
+
+    isUsedRef.current = true
+    callback()
+  }, [isUsedRef.current])
 }
