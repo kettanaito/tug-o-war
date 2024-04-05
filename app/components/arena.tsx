@@ -57,7 +57,7 @@ export function Arena({
           margin: 0,
           textAlign: 'center',
           fontSize: '12vw',
-          color: '#333',
+          color: '#111',
         }}
       >
         00:{timeElapsed.toString().padStart(2, '0')}

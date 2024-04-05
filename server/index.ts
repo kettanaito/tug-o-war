@@ -5,7 +5,7 @@ import { WebSocketServer } from 'ws'
 import compression from 'compression'
 import morgan from 'morgan'
 import { createRequestHandler, type RequestHandler } from '@remix-run/express'
-import { broadcastDevReady, installGlobals } from '@remix-run/node'
+import { broadcastDevReady, installGlobals, ServerBuild } from '@remix-run/node'
 import sourceMapSupport from 'source-map-support'
 import { Game } from './Game.js'
 
@@ -13,17 +13,11 @@ import { Game } from './Game.js'
 installGlobals()
 sourceMapSupport.install()
 
-/**
- * @typedef {import('@remix-run/node').ServerBuild} ServerBuild
- */
 const BUILD_PATH = process.env.BUILD_PATH || '../build/index.js'
 const WATCH_PATH = process.env.WATCH_PATH || '../build/version.txt'
 
-/**
- * Initial build
- * @type {ServerBuild}
- */
-let build = await import(BUILD_PATH)
+// Initial build.
+let build: ServerBuild = await import(BUILD_PATH)
 
 // We'll make chokidar a dev dependency so it doesn't get bundled in production.
 const chokidar =
@@ -83,17 +77,14 @@ function createDevRequestHandler(): RequestHandler {
 }
 
 // ESM import cache busting
-/**
- * @type {() => Promise<ServerBuild>}
- */
-async function reimportServer() {
+async function reimportServer(): Promise<ServerBuild> {
   const stat = fs.statSync(BUILD_PATH)
 
   // use a timestamp query parameter to bust the import cache
   return import(BUILD_PATH + '?t=' + stat.mtimeMs)
 }
 
-app.get('/initial-state', (req, res) => {
+app.get('/state', (req, res) => {
   res.json(game.getState())
 })
 

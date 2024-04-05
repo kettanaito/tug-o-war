@@ -5,7 +5,7 @@ import { Orientation } from '~/components/orientation.tsx'
 import { TugOWar } from '~/components/tug-o-war.tsx'
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const initialState = await fetch(new URL('/initial-state', request.url)).then(
+  const initialState = await fetch(new URL('/state', request.url)).then(
     (response) => response.json(),
   )
 

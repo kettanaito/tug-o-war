@@ -207,6 +207,7 @@ export class Game {
     )
 
     this.gameState = GameState.END
+    this.timeElapsed = 0
     this.lastWinner = winningTeam
 
     // this.room.storage.put('gameState', this.gameState)
