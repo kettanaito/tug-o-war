@@ -1,4 +1,4 @@
-import { useWebSocketClient } from '~/hooks/useWebSocket.ts'
+import { useWebSocketClient } from '~/hooks/useWebSocketClient.ts'
 import { ClientMessageType } from '~/messages.ts'
 
 export default function GameAdminPanel() {

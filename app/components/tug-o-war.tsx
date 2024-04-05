@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { GameEnd } from '~/components/game-end.tsx'
 import { Arena } from '~/components/arena.tsx'
-import { useWebSocketClient } from '~/hooks/useWebSocket.ts'
+import { useWebSocketClient } from '~/hooks/useWebSocketClient.ts'
 import { ClientMessageType, GameState, GameTeam } from '~/messages.ts'
 
 export function TugOWar({
