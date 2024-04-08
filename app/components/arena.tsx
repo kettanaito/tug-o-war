@@ -67,10 +67,10 @@ export function Arena({
           style={{
             background: 'url(/assets/rope.png) top left no-repeat',
             backgroundSize: 'contain',
-            aspectRatio: '21.2 / 1',
-            height: '3vw',
+            aspectRatio: '32.3 / 1',
+            height: '1.74vw',
             position: 'absolute',
-            top: '39.6%',
+            top: '40.5%',
             left: '50%',
             transform: 'translateX(-50%)',
           }}
