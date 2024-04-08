@@ -15,6 +15,15 @@ body {
   font-family: MorrisRoman, sans-serif;
 }
 
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url(/assets/noise.png) no-repeat;
+  background-size: cover;
+  mix-blend-mode: darken;
+}
+
 #gameplay-area {
   position: relative;
   background: url(/assets/background.png) no-repeat;
@@ -42,12 +51,12 @@ body {
   left: 0;
   right: 0;
   margin: auto;
-  transform: translateY(-50%);
+  transform: translateY(-30%);
   display: block;
   content: '';
-  height: 5%;
+  height: 7%;
   width: 75%;
-  background: #00000070;
+  background: #00000060;
   filter: blur(2px);
   border-radius: 100%;
 }
