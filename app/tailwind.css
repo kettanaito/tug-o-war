@@ -22,6 +22,8 @@ body::after {
   background: url(/assets/noise.png) no-repeat;
   background-size: cover;
   mix-blend-mode: darken;
+  z-index: 0;
+  pointer-events: none;
 }
 
 #gameplay-area {
