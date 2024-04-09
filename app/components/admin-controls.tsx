@@ -30,10 +30,10 @@ export function AdminControls() {
       }}
     >
       <div style={{ display: 'flex', gap: '1rem' }}>
-        <button onClick={handleReady} style={{ padding: '1rem 2rem' }}>
+        <button onClick={handleReady} style={{ padding: '0.5rem 2rem' }}>
           <strong>Start game</strong>
         </button>
-        <button onClick={handleReset} style={{ padding: '1rem 2rem' }}>
+        <button onClick={handleReset} style={{ padding: '0.5rem 2rem' }}>
           Reset
         </button>
       </div>
