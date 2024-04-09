@@ -1,6 +1,6 @@
 {
   "name": "tug-o-war",
-  "description": "A tug-o-war game using Remix, WebSockets, and MSW.",
+  "description": "A tug-o-war game with Remix, WebSockets, and MSW.",
   "private": true,
   "sideEffects": false,
   "type": "module",
