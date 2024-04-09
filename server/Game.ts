@@ -9,6 +9,7 @@ import {
   ServerMessageType,
 } from '~/messages.ts'
 
+const PULL_SCORE_DELTA = 10
 const COUNTDOWN_SECONDS = 3
 const GAME_DURATION_MS = 15_000
 
@@ -210,7 +211,8 @@ export class Game {
       return
     }
 
-    const scoreDelta = team === 'team-left' ? -10 : 10
+    const scoreDelta =
+      team === 'team-left' ? -PULL_SCORE_DELTA : PULL_SCORE_DELTA
     this.score = Math.max(
       MIN_SCORE,
       Math.min(MAX_SCORE, this.score + scoreDelta),
