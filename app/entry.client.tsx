@@ -11,7 +11,7 @@ declare global {
 }
 
 async function prepareApp() {
-  if (window.ENV.USE_MOCKS) {
+  if (window.ENV.USE_MOCKS === '1') {
     const { worker } = await import('./mocks/browser.js')
 
     await worker.start({
