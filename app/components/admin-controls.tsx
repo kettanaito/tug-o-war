@@ -1,7 +1,7 @@
 import { useWebSocketClient } from '~/hooks/useWebSocketClient.ts'
 import { ClientMessageType } from '~/messages.ts'
 
-export default function GameAdminPanel() {
+export function AdminControls() {
   const socket = useWebSocketClient()
 
   const handleReady = () => {
@@ -16,17 +16,25 @@ export default function GameAdminPanel() {
   }
 
   return (
-    <div style={{ padding: '1rem', color: '#eee' }}>
-      <h1>Game admin</h1>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        margin: 'auto',
+        padding: '1rem',
+        color: '#fff',
+        background: '#00000095',
+        zIndex: 10,
+      }}
+    >
       <div style={{ display: 'flex', gap: '1rem' }}>
-        <button
-          onClick={handleReady}
-          style={{ padding: '2rem', width: '250px' }}
-        >
-          READY!
+        <button onClick={handleReady} style={{ padding: '1rem 2rem' }}>
+          <strong>Start game</strong>
         </button>
-        <button onClick={handleReset} style={{ padding: '2rem' }}>
-          RESET
+        <button onClick={handleReset} style={{ padding: '1rem 2rem' }}>
+          Reset
         </button>
       </div>
     </div>

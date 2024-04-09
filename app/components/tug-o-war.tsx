@@ -3,6 +3,7 @@ import { GameEnd } from '~/components/game-end.tsx'
 import { Arena } from '~/components/arena.tsx'
 import { useWebSocketClient } from '~/hooks/useWebSocketClient.ts'
 import { ClientMessageType, GameState, GameTeam } from '~/messages.ts'
+import { AdminControls } from './admin-controls.tsx'
 
 export function TugOWar({
   initialGameState,
@@ -24,6 +25,10 @@ export function TugOWar({
   )
   const [countdown, setCountdown] = useState(initialCountdown ?? -1)
   const [timeElapsed, setTimeElapsed] = useState(initialTimeElapsed ?? 0)
+
+  // Conditionally display the admin controls.
+  const shouldDisplayAdmin =
+    new URLSearchParams(window.location.search).get('admin') === 'true'
 
   const socket = useWebSocketClient({
     onMessage(event) {
@@ -137,6 +142,8 @@ export function TugOWar({
           }
         }
       })()}
+
+      {shouldDisplayAdmin ? <AdminControls /> : null}
     </div>
   )
 }
