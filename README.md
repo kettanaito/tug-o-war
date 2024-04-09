@@ -28,3 +28,9 @@ For build and preview:
 npm run build
 npm start
 ```
+
+## Learn more
+
+- [**Documentation: Handling WebSocket events with MSW**](https://website-git-docs-ws-mswjs.vercel.app/docs/basics/handling-websocket-events)
+- [Documentation: `ws` API](https://website-git-docs-ws-mswjs.vercel.app/docs/api/ws)
+- [Submit your feedback on the new `ws` API](https://github.com/mswjs/msw/discussions/2010)
