@@ -149,9 +149,9 @@ it('shows the winning screen once one side wins', async () => {
 
   // Wait for the UI to show the winning message.
   expect(
-    await screen.findByRole('heading', { name: /The game is over/i }),
+    await screen.findByRole('heading', { name: /That's the game!/i }),
   ).toBeVisible()
-  expect(screen.getByText(/team-right has won/i)).toBeVisible()
+  expect(screen.getByText(/"SPACES" has won/i)).toBeVisible()
 
   // Pulling buttons are not present on the winning screen.
   expect(
