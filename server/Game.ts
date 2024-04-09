@@ -82,7 +82,7 @@ export class Game {
 
     // Broadcast the start of the game.
     this.gameState = GameState.PLAYING
-    // this.room.storage.put('gameState', this.gameState)
+
     this.broadcast(
       JSON.stringify({
         type: 'game/state-change',
@@ -95,7 +95,7 @@ export class Game {
     // Broadcast the elapsed game time.
     this.gameTimer = setInterval(() => {
       this.timeElapsed += 1
-      // this.room.storage.put('timeElapsed', this.timeElapsed)
+
       this.broadcast(
         JSON.stringify({
           type: 'time/elapsed',
@@ -160,12 +160,6 @@ export class Game {
     clearInterval(this.gameTimer)
     clearTimeout(this.gameEndTimer)
 
-    // this.room.storage.put('gameState', this.gameState)
-    // this.room.storage.put('score', this.score)
-    // this.room.storage.put('timeElapsed', this.timeElapsed)
-    // this.room.storage.put('countdown', this.countdown)
-    // this.room.storage.put('lastWinner', undefined)
-
     this.broadcast(
       JSON.stringify({
         type: 'game/state-change',
@@ -209,10 +203,6 @@ export class Game {
     this.gameState = GameState.END
     this.timeElapsed = 0
     this.lastWinner = winningTeam
-
-    // this.room.storage.put('gameState', this.gameState)
-    // this.room.storage.put('timeElapsed', 0)
-    // this.room.storage.put('lastWinner', this.lastWinner)
   }
 
   private handlePull(team: GameTeam): void {
@@ -225,7 +215,6 @@ export class Game {
       MIN_SCORE,
       Math.min(MAX_SCORE, this.score + scoreDelta),
     )
-    // this.room.storage.put('score', this.score)
 
     this.broadcast(
       JSON.stringify({
