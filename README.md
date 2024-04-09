@@ -1,4 +1,4 @@
-![Tug-o-war game in action](/screenshot.png)
+![Tug-o-war game in action](/public/game.png)
 
 <h1 align="center">Tug-o-War Game</h1>
 

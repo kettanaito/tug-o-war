@@ -15,11 +15,31 @@ import styles from './tailwind.css'
 export const meta: MetaFunction = () => {
   return [
     {
-      title: 'Tug-o-War - Remix and MSW demo',
+      title: 'Tug-o-War',
     },
     {
       name: 'description',
-      content: 'A tug-o-war game with Remix and MSW',
+      content: 'A tug-o-war game with Remix, WebSockets, and MSW',
+    },
+    {
+      name: 'og:title',
+      content: 'Tug-o-War',
+    },
+    {
+      name: 'og:description',
+      content: 'A tug-o-war game with Remix, WebSockets, and MSW',
+    },
+    {
+      name: 'og:image',
+      content: '/game.png',
+    },
+    {
+      name: 'twitter:card',
+      content: 'summary_large_image',
+    },
+    {
+      name: 'twitter:creator',
+      content: '@kettanaito',
     },
   ]
 }
