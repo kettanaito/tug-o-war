@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { Sign } from './sign.tsx'
 import { GameState, GameTeam, MAX_SCORE, MIN_SCORE } from '~/messages.ts'
 
@@ -13,8 +13,8 @@ export function Arena({
   timeElapsed: number
   onPull: (team: GameTeam) => void
 }) {
-  const teamLeftProgress = useTeamProgress(score, MIN_SCORE)
-  const teamRightProgress = useTeamProgress(score, MAX_SCORE)
+  const teamLeftProgress = useTeamProgress(score, 'team-left')
+  const teamRightProgress = useTeamProgress(score, 'team-right')
 
   return (
     <div style={{ marginTop: '2vw' }}>
@@ -160,15 +160,18 @@ function getNextTeamProgress(score: number, maxScore: number) {
   return Math.max(0, Math.min(100, (score * 100) / maxScore))
 }
 
-function useTeamProgress(score: number, maxScore: number) {
-  const prevProgress = useRef(score)
-  const nextProgress = getNextTeamProgress(score, maxScore)
-  const resolvedProgress = Math.max(prevProgress.current || 0, nextProgress)
+function useTeamProgress(score: number, team: GameTeam) {
+  const prevProgress = Number(sessionStorage.getItem(`${team}-progress`) || 0)
+  const nextProgress = getNextTeamProgress(
+    score,
+    team === 'team-left' ? MIN_SCORE : MAX_SCORE,
+  )
+  const resolvedProgress = Math.max(prevProgress || 0, nextProgress)
 
   // Keep the previous value of the progress
   // because it can never decrease, only increase.
   useEffect(() => {
-    prevProgress.current = resolvedProgress
+    sessionStorage.setItem(`${team}-progress`, resolvedProgress.toString())
   }, [resolvedProgress])
 
   return resolvedProgress

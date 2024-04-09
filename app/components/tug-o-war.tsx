@@ -44,6 +44,9 @@ export function TugOWar({
             setGameScore(0)
             setCountdown(-1)
             setTimeElapsed(0)
+
+            sessionStorage.removeItem('team-left-progress')
+            sessionStorage.removeItem('team-right-progress')
           }
 
           if (message.payload.nextState === GameState.END) {
