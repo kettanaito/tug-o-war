@@ -9,7 +9,7 @@ import {
   ServerMessageType,
 } from '~/messages.ts'
 
-const PULL_SCORE_DELTA = 10
+const PULL_SCORE_DELTA = 5
 const COUNTDOWN_SECONDS = 3
 const GAME_DURATION_MS = 15_000
 
