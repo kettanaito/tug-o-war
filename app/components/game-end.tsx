@@ -14,7 +14,7 @@ export function GameEnd({
         width: '50vw',
         maxWidth: '100%',
         aspectRatio: '2.85 / 1',
-        margin: '16.5vw auto',
+        margin: '10vw auto',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
