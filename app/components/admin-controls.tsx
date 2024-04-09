@@ -10,6 +10,8 @@ export function AdminControls() {
     )
   }
   const handleReset = () => {
+    sessionStorage.removeItem('team-left-progress')
+    sessionStorage.removeItem('team-right-progress')
     socket.send(
       JSON.stringify({ type: 'admin/reset' } satisfies ClientMessageType),
     )
