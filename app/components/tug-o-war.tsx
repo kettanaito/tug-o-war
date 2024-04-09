@@ -45,7 +45,7 @@ export function TugOWar({
           setGameState(message.payload.nextState)
 
           // Handle reset.
-          if (message.payload.nextState === GameState.IDLE && gameScore !== 0) {
+          if (message.payload.nextState === GameState.IDLE) {
             setGameScore(0)
             setCountdown(-1)
             setTimeElapsed(0)
