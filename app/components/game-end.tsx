@@ -1,4 +1,5 @@
 import { GameTeam } from '~/messages.ts'
+import { options } from '~/question.ts'
 
 export function GameEnd({
   winningTeam,
@@ -32,7 +33,7 @@ export function GameEnd({
         </h2>
         <p style={{ margin: 0 }}>
           {winningTeam ? (
-            <>{winningTeam} has won!</>
+            <>"{options[winningTeam]?.toUpperCase()}" has won!</>
           ) : (
             <>Looks like it's a DRAW!</>
           )}

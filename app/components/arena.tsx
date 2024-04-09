@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Sign } from './sign.tsx'
 import { GameState, GameTeam, MAX_SCORE, MIN_SCORE } from '~/messages.ts'
+import { options } from '~/question.ts'
 
 export function Arena({
   gameState,
@@ -123,7 +124,7 @@ export function Arena({
           width: '20%',
         }}
       >
-        <Sign>Tabs</Sign>
+        <Sign>{options['team-left']}</Sign>
       </div>
       <div
         style={{
@@ -134,7 +135,7 @@ export function Arena({
           width: '20%',
         }}
       >
-        <Sign reversed>Spaces</Sign>
+        <Sign reversed>{options['team-right']}</Sign>
       </div>
     </div>
   )
