@@ -93,6 +93,10 @@ app.get('/state', (req, res) => {
   res.json(game.getState())
 })
 
+app.get('/clients-count', (req, res) => {
+  res.json(game.clientsCount)
+})
+
 const wss = new WebSocketServer({ server })
 const game = new Game(wss)
 

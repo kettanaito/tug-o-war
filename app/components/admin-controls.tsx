@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { useWebSocketClient } from '~/hooks/useWebSocketClient.ts'
 import { ClientMessageType } from '~/messages.ts'
 
 export function AdminControls() {
+  const [playersCount, setPlayersCount] = useState(0)
   const socket = useWebSocketClient()
 
   const handleReady = () => {
@@ -9,6 +11,7 @@ export function AdminControls() {
       JSON.stringify({ type: 'admin/ready' } satisfies ClientMessageType),
     )
   }
+
   const handleReset = () => {
     sessionStorage.removeItem('team-left-progress')
     sessionStorage.removeItem('team-right-progress')
@@ -16,6 +19,21 @@ export function AdminControls() {
       JSON.stringify({ type: 'admin/reset' } satisfies ClientMessageType),
     )
   }
+
+  useEffect(() => {
+    const pollPlayersCount = async () => {
+      const response = await fetch('/clients-count')
+      const playersCount = await response.text()
+      setPlayersCount(Number(playersCount))
+    }
+
+    pollPlayersCount()
+    const interval = setInterval(() => pollPlayersCount(), 3_000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
 
   return (
     <div
@@ -38,6 +56,7 @@ export function AdminControls() {
         <button onClick={handleReset} style={{ padding: '0.5rem 2rem' }}>
           Reset
         </button>
+        <p>{playersCount} player(s)</p>
       </div>
     </div>
   )

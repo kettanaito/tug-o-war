@@ -14,6 +14,7 @@ const COUNTDOWN_SECONDS = 3
 const GAME_DURATION_MS = 15_000
 
 export class Game {
+  clientsCount = 0
   score = 0
   gameState: GameState = GameState.IDLE
   countdown = -1
@@ -26,8 +27,14 @@ export class Game {
 
   constructor(private readonly ws: WebSocketServer) {
     ws.addListener('connection', (ws) => {
+      this.clientsCount += 1
+
       ws.addEventListener('message', (event) => {
         this.onMessage(event.data)
+      })
+
+      ws.addEventListener('close', () => {
+        this.clientsCount -= 1
       })
     })
   }

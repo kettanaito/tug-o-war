@@ -15,14 +15,7 @@ async function prepareApp() {
     const { worker } = await import('./mocks/browser.js')
 
     await worker.start({
-      onUnhandledRequest(request, print) {
-        const url = new URL(request.url)
-        if (/\.(css|js|json|png|jpg|gif)$/.test(url.pathname)) {
-          return
-        }
-
-        print.warning()
-      },
+      onUnhandledRequest: 'bypass',
     })
   }
 }
