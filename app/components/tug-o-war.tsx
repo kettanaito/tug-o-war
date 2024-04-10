@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
+import throttle from 'lodash.throttle'
 import { GameEnd } from '~/components/game-end.tsx'
 import { Arena } from '~/components/arena.tsx'
 import { useWebSocketClient } from '~/hooks/useWebSocketClient.ts'
@@ -79,16 +80,19 @@ export function TugOWar({
     },
   })
 
-  const addScore = (team: GameTeam) => {
-    socket.send(
-      JSON.stringify({
-        type: 'pull',
-        payload: {
-          team,
-        },
-      } satisfies ClientMessageType),
-    )
-  }
+  const addScore = useCallback(
+    throttle((team: GameTeam) => {
+      socket.send(
+        JSON.stringify({
+          type: 'pull',
+          payload: {
+            team,
+          },
+        } satisfies ClientMessageType),
+      )
+    }, 200),
+    [],
+  )
 
   return (
     <div id="gameplay-area">
