@@ -92,7 +92,6 @@ export function Arena({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '1vw',
               transform: `translateX(calc(-10vw + ${
                 teamRightProgress / 10
               }vw))`,
@@ -105,7 +104,6 @@ export function Arena({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '1vw',
               transform: `translateX(calc(10vw - ${teamLeftProgress / 10}vw))`,
             }}
           >
