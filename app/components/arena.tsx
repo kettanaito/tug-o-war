@@ -49,6 +49,7 @@ export function Arena({
           zIndex: 1,
           background: 'transparent',
           border: 0,
+          outline: 'none',
         }}
         onClick={handlePull('team-left')}
         disabled={gameState !== GameState.PLAYING}
@@ -64,6 +65,7 @@ export function Arena({
           zIndex: 1,
           background: 'transparent',
           border: 0,
+          outline: 'none',
         }}
         onClick={handlePull('team-right')}
         disabled={gameState !== GameState.PLAYING}
