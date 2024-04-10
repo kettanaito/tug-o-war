@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { MouseEventHandler, useEffect } from 'react'
 import { Sign } from './sign.tsx'
 import { GameState, GameTeam, MAX_SCORE, MIN_SCORE } from '~/messages.ts'
 import { options } from '~/question.ts'
@@ -17,6 +17,25 @@ export function Arena({
   const teamLeftProgress = useTeamProgress(score, 'team-left')
   const teamRightProgress = useTeamProgress(score, 'team-right')
 
+  const handlePull = (team: GameTeam): MouseEventHandler<HTMLButtonElement> => {
+    return (event) => {
+      onPull(team)
+
+      const { pageX, pageY } = event
+      const parent = document.getElementById('gameplay-area')
+      const label = document.createElement('p')
+      label.innerText = `${options[team]}!`
+      label.className = 'pull-label'
+      label.style.top = `calc(${pageY}px - 3vw)`
+      label.style.left = `${pageX}px`
+
+      parent?.appendChild(label)
+      setTimeout(() => {
+        parent?.removeChild(label)
+      }, 500)
+    }
+  }
+
   return (
     <div style={{ marginTop: '2vw' }}>
       <button
@@ -31,7 +50,7 @@ export function Arena({
           background: 'transparent',
           border: 0,
         }}
-        onClick={() => onPull('team-left')}
+        onClick={handlePull('team-left')}
         disabled={gameState !== GameState.PLAYING}
       />
       <button
@@ -46,7 +65,7 @@ export function Arena({
           background: 'transparent',
           border: 0,
         }}
-        onClick={() => onPull('team-right')}
+        onClick={handlePull('team-right')}
         disabled={gameState !== GameState.PLAYING}
       />
 
